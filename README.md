@@ -1,39 +1,50 @@
 # CryptoShield · CyberNoble365
 
-Marketing landing page for **CryptoShield**, the mobile security app from CyberNoble365 (in partnership with Aspis Cyber Security).
+Marketing site + checkout for **CryptoShield**, the mobile security app from
+CyberNoble365 (in partnership with Aspis Cyber Security). Built with **Next.js
+(App Router) + TypeScript**.
 
 ## What's in this repo
 
-- `index.html` — single-file landing page (HTML + embedded CSS + vanilla JS).
-- No build step required.
+- `app/page.tsx` — the marketing landing page (renders `content/landing.html`).
+- `content/landing.html` — the original hand-authored landing markup (kept
+  verbatim for pixel-perfect fidelity).
+- `app/globals.css` — all site styles, plus the checkout styles.
+- `components/LandingInteractions.tsx` — sticky header, mobile menu, FAQ
+  accordion, scroll-reveal and the free health-check form (client-side).
+- `app/checkout/` — WooCommerce-style checkout (billing + order summary +
+  payment method selection) with **Pay.com** and **BridgerPay**.
+- `app/api/payments/` — server route handlers for creating payment sessions and
+  receiving webhooks.
+- `lib/` — gateway clients + order config.
+- `index.html` — the original single-file build, kept for reference.
 
 ## Run locally
 
-Any static HTTP server will do. For example:
-
 ```bash
-npx http-server -p 8765 -c-1
-# then open http://localhost:8765/
+npm install
+cp .env.local.example .env.local   # fill in payment keys when ready
+npm run dev                        # http://localhost:3000
 ```
 
-Or just double-click `index.html`.
+- Landing page: `/`
+- Checkout: `/checkout`
 
-## Sections
+`npm run build` produces a production build; `npm start` serves it.
 
-1. Hero — phone mockup with floating notifications + US/EU patent badges
-2. Threat coverage — Network / Apps / Privileges / Advanced
-3. Bottom Line — numbered manifesto of the four core promises
-4. Phone Inventory — "what your phone actually holds"
-5. Deployed — partner co-brand + enterprise marquee + country flags
-6. Sound familiar? — bento grid of everyday threats
-7. Inside the app — features list + phone health-score visual
-8. How it works — three-step flow
-9. Free diagnosis — split form card
-10. FAQ
-11. Final CTA + footer
+## Payments
+
+Pay.com and BridgerPay are fully wired into `/checkout`. Account setup and the
+exact credentials you need to provide are documented in **[SETUP.md](./SETUP.md)**.
+Without keys the checkout renders but returns "not configured" on pay.
+
+## Sections (landing)
+
+Hero · Threat coverage · Bottom line · Phone inventory · Deployed · Sound
+familiar? · Inside the app · How it works · Free diagnosis · FAQ · Final CTA.
 
 ## Brand
 
-- **Type:** Outfit (sans, primary)
+- **Type:** Outfit (sans, primary), Lora (serif wordmark moments)
 - **Palette:** `--navy: #0F174F`, `--crimson: #FF0042`, `--gold: #D8BE75`, `--peri: #C6CBEA`
 - **Voice:** friendly, family-focused, no "military-grade" / "enterprise-grade" language.
