@@ -151,10 +151,10 @@ nav.primary a:hover{color:var(--gold)}
 .app-badge .bdg-ic svg{width:13px;height:13px;color:#fff}
 .app-badge b{font-weight:700;color:var(--gold)}
 .hero h1{
-  font-size:clamp(2.3rem,4.5vw,3.6rem);font-weight:800;letter-spacing:-.03em;line-height:1.06;margin:18px 0 0;max-width:17ch;
+  font-size:clamp(1.8rem,4.5vw,3.1rem);font-weight:800;letter-spacing:-.03em;line-height:1.06;margin:18px 0 0;max-width:17ch;
 }
 .hero h1 .accent{color:var(--gold)}
-.hero .lede{margin-top:22px;font-size:1.18rem;color:var(--peri);max-width:44ch}
+.hero .lede{margin-top:22px;font-size:0.96875rem;color:var(--peri);max-width:44ch}
 .hero-cta-row{margin-top:30px;display:flex;flex-wrap:wrap;gap:14px;align-items:center}
 .rating-mini{display:inline-flex;align-items:center;gap:10px;color:rgba(198,203,234,.92);font-size:.92rem}
 .rating-mini .stars{display:inline-flex;gap:2px;color:var(--gold)}
@@ -174,7 +174,6 @@ nav.primary a:hover{color:var(--gold)}
   transition:transform .25s var(--ease),border-color .25s var(--ease),background .25s;
   cursor:default;
 }
-.patent-badge:hover{transform:translateY(-2px);border-color:var(--gold);background:linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04))}
 .patent-flag{
   width:40px;height:40px;border-radius:50%;flex:none;overflow:hidden;
   box-shadow:0 6px 14px -6px rgba(0,0,0,.55), inset 0 0 0 1.5px rgba(216,190,117,.45);
@@ -294,7 +293,6 @@ nav.primary a:hover{color:var(--gold)}
   transition:transform .35s var(--ease),box-shadow .35s var(--ease),border-color .35s;
   position:relative;
 }
-.threat-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-card);border-color:rgba(216,190,117,.5)}
 .tc-art{
   position:relative;height:172px;overflow:hidden;
   display:flex;align-items:center;justify-content:center;
@@ -377,7 +375,6 @@ nav.primary a:hover{color:var(--gold)}
   transition:background .25s var(--ease),padding-left .25s var(--ease);
   position:relative;
 }
-.bl-row:hover{background:rgba(255,255,255,.5);padding-left:20px}
 .bl-row .br-num{
   font-size:2.6rem;font-weight:800;color:var(--gold-deep);
   font-variant-numeric:tabular-nums;letter-spacing:-.03em;line-height:1;flex:none;
@@ -416,7 +413,6 @@ nav.primary a:hover{color:var(--gold)}
 @media(max-width:560px){
   .bottomline{padding:84px 0 88px}
   .bl-row{grid-template-columns:auto 1fr;gap:18px;padding:22px 4px}
-  .bl-row:hover{padding-left:8px}
   .bl-row .br-num{font-size:2rem;min-width:48px}
   .bl-row .br-ic{display:none}
   .bl-row .br-body p{font-size:.95rem}
@@ -457,7 +453,6 @@ nav.primary a:hover{color:var(--gold)}
   transition:transform .3s var(--ease),box-shadow .3s var(--ease),border-color .3s;
   position:relative;overflow:hidden;
 }
-.inv-card:hover{transform:translateY(-5px);box-shadow:var(--shadow-card);border-color:rgba(216,190,117,.5)}
 .inv-card::after{
   content:"";position:absolute;top:-30%;right:-25%;width:160px;height:160px;border-radius:50%;
   background:var(--bg, rgba(216,190,117,.10));opacity:.5;pointer-events:none;
@@ -551,7 +546,6 @@ nav.primary a:hover{color:var(--gold)}
   font-weight:800;font-size:1.1rem;letter-spacing:.06em;
   white-space:nowrap;flex:none;opacity:.85;transition:opacity .2s,color .2s,transform .2s;
 }
-.dep-logo:hover{opacity:1;color:var(--navy);transform:translateY(-2px)}
 .dep-logo .sm{font-size:.68rem;font-weight:700;color:#a1a8bd;margin-left:5px;letter-spacing:.06em;text-transform:uppercase}
 .dep-logo.italic{font-style:italic;letter-spacing:.01em;font-weight:700}
 
@@ -585,7 +579,6 @@ nav.primary a:hover{color:var(--gold)}
   display:flex;flex-direction:column;align-items:center;gap:14px;
   transition:transform .25s var(--ease);
 }
-.dep-flag:hover{transform:translateY(-4px)}
 .dep-flag .fc{
   width:82px;height:54px;border-radius:8px;overflow:hidden;
   box-shadow:0 14px 28px -10px rgba(15,23,79,.32), inset 0 0 0 1px rgba(15,23,79,.08);
@@ -783,7 +776,6 @@ section{position:relative}
   transition:transform .3s var(--ease),border-color .3s var(--ease),background .3s;
   position:relative;overflow:hidden;
 }
-.proof-card:hover{transform:translateY(-6px);border-color:rgba(216,190,117,.5)}
 .proof-card .pi{width:54px;height:54px;border-radius:15px;background:rgba(216,190,117,.18);color:var(--gold);display:flex;align-items:center;justify-content:center;margin-bottom:18px}
 .proof-card .pi svg{width:26px;height:26px}
 .proof-card h3{color:#fff;font-size:1.3rem;font-weight:700;letter-spacing:-.01em}
@@ -800,7 +792,6 @@ section{position:relative}
 .hiw-head h2 .accent-crimson{color:var(--crimson)}
 .hiw-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;margin-top:60px}
 .hiw-card{position:relative;overflow:hidden;border-radius:24px;padding:30px 30px 34px;min-height:290px;display:flex;flex-direction:column;background:#fff;border:1px solid rgba(15,23,79,.10);transition:transform .3s var(--ease),box-shadow .3s var(--ease)}
-.hiw-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-card)}
 .hiw-card .step-pill{align-self:flex-start;font-size:.82rem;font-weight:700;color:var(--navy);background:rgba(15,23,79,.04);border:1px solid rgba(15,23,79,.08);border-radius:99px;padding:6px 14px}
 .hiw-card .hcic{position:absolute;top:28px;right:28px;width:46px;height:46px;border-radius:13px;background:#fff;border:1px solid rgba(15,23,79,.08);color:var(--crimson);display:flex;align-items:center;justify-content:center;box-shadow:0 10px 22px -14px rgba(15,23,79,.25)}
 .hiw-card .hcic svg{width:24px;height:24px}
@@ -904,12 +895,10 @@ section{position:relative}
   background:#fff;border:1px solid var(--line-dark);border-radius:var(--radius-lg);
   padding:34px 30px;position:relative;transition:transform .3s var(--ease), box-shadow .3s var(--ease);
 }
-.plan:hover{transform:translateY(-6px);box-shadow:var(--shadow-card)}
 .plan.featured{
   background:linear-gradient(170deg,var(--navy),var(--ink));color:#fff;border-color:transparent;
   box-shadow:0 30px 70px -30px rgba(15,23,79,.6);transform:scale(1.03);
 }
-.plan.featured:hover{transform:scale(1.03) translateY(-6px)}
 .plan .tag{position:absolute;top:-13px;left:50%;transform:translateX(-50%);background:var(--gold);color:var(--ink);font-size:.74rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:6px 16px;border-radius:999px}
 .plan .pname{font-size:1.3rem;font-weight:700}
 .plan .pdesc{margin-top:8px;font-size:.95rem;color:#54607f;min-height:46px}
@@ -961,7 +950,6 @@ section{position:relative}
   color:#8089a3;font-weight:700;letter-spacing:.02em;font-size:1rem;
   transition:transform .3s var(--ease),color .2s,border-color .2s;
 }
-.lg-cell:hover{transform:translateY(-3px);color:var(--navy);border-color:var(--gold)}
 .lg-cell .serif{font-style:italic}
 
 /* ============================================================
@@ -1122,7 +1110,6 @@ footer .logo .word{color:#fff}
   .diag-form{padding:36px 30px 40px}
   .plans{grid-template-columns:1fr;max-width:440px;margin-left:auto;margin-right:auto}
   .plan.featured{transform:none}
-  .plan.featured:hover{transform:translateY(-6px)}
   .foot-top{grid-template-columns:1fr 1fr}
   .logo-strip{grid-template-columns:repeat(2,1fr)}
 }
