@@ -8,8 +8,19 @@ Thumbs.db
 *.swp
 *~
 
-# Dependencies (not used here, but future-proofing)
+# Dependencies
 node_modules/
+
+# Next.js
+.next/
+out/
+next-env.d.ts
+*.tsbuildinfo
+
+# Env / secrets
+.env
+.env.local
+.env*.local
 
 # Local server logs / temp
 *.log
