@@ -497,52 +497,39 @@ nav.primary a:hover{color:var(--gold)}
 }
 
 /* ============================================================
-   SUITE ICON STYLE PREVIEW (mockup — safe to delete)
+   COMPLETE YOUR PROTECTION — full-suite cross-sell
    ============================================================ */
-.suite-demo{padding:96px 0 100px;background:#fff}
+.suite{padding:96px 0 100px;background:#fff}
 .suite-head{max-width:60ch}
 .suite-head h2{font-size:clamp(1.9rem,3.4vw,2.7rem);font-weight:800;color:var(--navy);margin-top:16px;letter-spacing:-.025em;line-height:1.1}
 .suite-head h2 .accent{color:var(--gold-deep)}
 .suite-head p{margin-top:16px;color:#54607f;font-size:1.06rem;line-height:1.55}
-.suite-head p b{color:var(--navy);font-weight:700}
-.suite-label{margin:48px 0 16px;font-size:.74rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#8089a3}
 
-.suite-row{display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+.suite-row{margin-top:48px;display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
 .suite-item{display:flex;flex-direction:column;gap:14px;align-items:flex-start}
 .suite-item .si{
-  width:54px;height:54px;display:flex;align-items:center;justify-content:center;
-  color:var(--c,var(--gold-deep));flex:none;transition:transform .3s var(--ease);
+  width:54px;height:54px;display:flex;align-items:center;justify-content:center;flex:none;
+  color:var(--c,var(--gold-deep));border-radius:50%;background:transparent;
+  box-shadow:inset 0 0 0 1.5px var(--brd,rgba(216,190,117,.45));
+  transition:transform .3s var(--ease);
 }
 .suite-item .si svg{width:26px;height:26px}
 .suite-item .st b{display:block;font-size:1rem;font-weight:700;color:var(--navy);letter-spacing:-.01em;line-height:1.25}
 .suite-item .st span{display:block;margin-top:4px;font-size:.84rem;font-weight:600;color:#8089a3;line-height:1.4}
 .suite-item:hover .si{transform:translateY(-3px)}
 
-/* Style A · outline — thin ring, transparent fill, single accent stroke */
-.suite-row.outline .si{
-  border-radius:50%;background:transparent;
-  box-shadow:inset 0 0 0 1.5px var(--brd,rgba(216,190,117,.45));
-}
-
-/* Style B · tinted tile — soft-filled rounded square (checkout cross-sell look) */
-.suite-row.tile .si{
-  border-radius:15px;background:var(--bg,rgba(216,190,117,.16));
-  box-shadow:inset 0 0 0 1px var(--brd,rgba(216,190,117,.28));
-}
-
-/* shared per-product accent tokens */
-.suite-item.s-shield{--c:var(--gold-deep);--bg:rgba(216,190,117,.20);--brd:rgba(216,190,117,.40)}
-.suite-item.s-web   {--c:var(--blue);     --bg:rgba(75,66,247,.10); --brd:rgba(75,66,247,.30)}
-.suite-item.s-mail  {--c:var(--crimson);  --bg:rgba(255,0,66,.10);  --brd:rgba(255,0,66,.28)}
-.suite-item.s-365   {--c:var(--navy);     --bg:rgba(15,23,79,.09);  --brd:rgba(15,23,79,.20)}
-.suite-item.s-cloud {--c:var(--blue);     --bg:rgba(75,66,247,.10); --brd:rgba(75,66,247,.30)}
+.suite-item.s-shield{--c:var(--gold-deep);--brd:rgba(216,190,117,.45)}
+.suite-item.s-web   {--c:var(--blue);     --brd:rgba(75,66,247,.30)}
+.suite-item.s-mail  {--c:var(--crimson);  --brd:rgba(255,0,66,.28)}
+.suite-item.s-365   {--c:var(--navy);     --brd:rgba(15,23,79,.20)}
+.suite-item.s-cloud {--c:var(--blue);     --brd:rgba(75,66,247,.30)}
 
 @media(max-width:1040px){
-  .suite-row{grid-template-columns:repeat(3,1fr);gap:24px 16px}
+  .suite-row{grid-template-columns:repeat(3,1fr);gap:28px 16px}
 }
 @media(max-width:560px){
-  .suite-demo{padding:80px 0 84px}
-  .suite-row{grid-template-columns:repeat(2,1fr);gap:24px 14px}
+  .suite{padding:80px 0 84px}
+  .suite-row{grid-template-columns:repeat(2,1fr);gap:26px 14px}
 }
 
 /* ============================================================
