@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { useStatsigClient } from "@statsig/react-bindings";
 import { formatMoney, gatewayEnabled, type GatewayId } from "@/lib/order";
 
@@ -9,6 +9,7 @@ interface Addon {
   name: string;
   meta: string;
   price: number; // minor units
+  icon: ReactNode;
 }
 
 const BASE_LINE = {
@@ -17,11 +18,24 @@ const BASE_LINE = {
 };
 const CURRENCY = process.env.NEXT_PUBLIC_DEFAULT_CURRENCY ?? "USD";
 
+const ICON_WEB = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18" /></svg>
+);
+const ICON_MAIL = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="4" width="20" height="16" rx="2" /><path d="m2 7 10 6 10-6" /></svg>
+);
+const ICON_SHIELD = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2 4 6v6c0 5 3.4 8.5 8 10 4.6-1.5 8-5 8-10V6l-8-4Z" /><path d="M12 8v5m0 3h.01" /></svg>
+);
+const ICON_CLOUD = (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M7 18a4 4 0 0 1 0-8 5 5 0 0 1 9.6-1.5A3.5 3.5 0 0 1 17 18Z" /><path d="m9.5 13.5 2 2 3.5-3.5" /></svg>
+);
+
 const ADDONS: Addon[] = [
-  { id: "defensx", name: "DefensX Secure Web", meta: "Advanced Web & Phishing Protection", price: 5000 },
-  { id: "hornet-mail", name: "HornetSecurity Mail Protection", meta: "Microsoft 365 Email Security", price: 5000 },
-  { id: "hornet-365", name: "HornetSecurity 365 Total Protection", meta: "Email Security + Backup", price: 15000 },
-  { id: "acronis", name: "Acronis Cyber Protect", meta: "Cloud Backup & Cybersecurity", price: 8999 },
+  { id: "defensx", name: "DefensX Secure Web", meta: "Advanced Web & Phishing Protection", price: 5000, icon: ICON_WEB },
+  { id: "hornet-mail", name: "HornetSecurity Mail Protection", meta: "Microsoft 365 Email Security", price: 5000, icon: ICON_MAIL },
+  { id: "hornet-365", name: "HornetSecurity 365 Total Protection", meta: "Email Security + Backup", price: 15000, icon: ICON_SHIELD },
+  { id: "acronis", name: "Acronis Cyber Protect", meta: "Cloud Backup & Cybersecurity", price: 8999, icon: ICON_CLOUD },
 ];
 
 const COUNTRIES = ["United States (US)", "United Kingdom (UK)", "Canada", "Australia", "Germany", "France", "Georgia"];
@@ -210,7 +224,7 @@ export default function CheckoutClient() {
             const on = selectedAddons.has(a.id);
             return (
               <div className="co-upsell-row" key={a.id}>
-                <div className="co-upsell-ic" aria-hidden="true" />
+                <div className="co-upsell-ic" aria-hidden="true">{a.icon}</div>
                 <div className="co-upsell-info">
                   <b>{a.name}</b>
                   <span>{formatMoney(a.price, CURRENCY)} / year · {a.meta}</span>

@@ -497,6 +497,42 @@ nav.primary a:hover{color:var(--gold)}
 }
 
 /* ============================================================
+   COMPLETE YOUR PROTECTION — full-suite cross-sell
+   ============================================================ */
+.suite{padding:96px 0 100px;background:#fff}
+.suite-head{max-width:60ch}
+.suite-head h2{font-size:clamp(1.9rem,3.4vw,2.7rem);font-weight:800;color:var(--navy);margin-top:16px;letter-spacing:-.025em;line-height:1.1}
+.suite-head h2 .accent{color:var(--gold-deep)}
+.suite-head p{margin-top:16px;color:#54607f;font-size:1.06rem;line-height:1.55}
+
+.suite-row{margin-top:48px;display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+.suite-item{display:flex;flex-direction:column;gap:14px;align-items:flex-start}
+.suite-item .si{
+  width:54px;height:54px;display:flex;align-items:center;justify-content:center;flex:none;
+  color:var(--c,var(--gold-deep));border-radius:50%;background:transparent;
+  box-shadow:inset 0 0 0 1.5px var(--brd,rgba(216,190,117,.45));
+  transition:transform .3s var(--ease);
+}
+.suite-item .si svg{width:26px;height:26px}
+.suite-item .st b{display:block;font-size:1rem;font-weight:700;color:var(--navy);letter-spacing:-.01em;line-height:1.25}
+.suite-item .st span{display:block;margin-top:4px;font-size:.84rem;font-weight:600;color:#8089a3;line-height:1.4}
+.suite-item:hover .si{transform:translateY(-3px)}
+
+.suite-item.s-shield{--c:var(--gold-deep);--brd:rgba(216,190,117,.45)}
+.suite-item.s-web   {--c:var(--blue);     --brd:rgba(75,66,247,.30)}
+.suite-item.s-mail  {--c:var(--crimson);  --brd:rgba(255,0,66,.28)}
+.suite-item.s-365   {--c:var(--navy);     --brd:rgba(15,23,79,.20)}
+.suite-item.s-cloud {--c:var(--blue);     --brd:rgba(75,66,247,.30)}
+
+@media(max-width:1040px){
+  .suite-row{grid-template-columns:repeat(3,1fr);gap:28px 16px}
+}
+@media(max-width:560px){
+  .suite{padding:80px 0 84px}
+  .suite-row{grid-template-columns:repeat(2,1fr);gap:26px 14px}
+}
+
+/* ============================================================
    DEPLOYED — partner co-brand + enterprise logos + agencies
    Reference patterns: Linear / Stripe / Mercury customer strips,
    plus Tailscale-style country callout banners.
@@ -1190,7 +1226,8 @@ footer .logo .word{color:#fff}
 .co-upsell-h{font-weight:700;color:var(--navy);margin-bottom:12px}
 .co-upsell-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line-dark)}
 .co-upsell-row:first-of-type{border-top:0}
-.co-upsell-ic{width:34px;height:34px;border-radius:9px;background:var(--peri-tint);flex:none}
+.co-upsell-ic{width:34px;height:34px;border-radius:9px;background:var(--peri-tint);flex:none;display:flex;align-items:center;justify-content:center;color:var(--navy)}
+.co-upsell-ic svg{width:19px;height:19px}
 .co-upsell-info{flex:1;display:flex;flex-direction:column;line-height:1.3}
 .co-upsell-info b{color:var(--navy);font-size:.95rem}
 .co-upsell-info span{color:var(--navy);opacity:.6;font-size:.8rem}
