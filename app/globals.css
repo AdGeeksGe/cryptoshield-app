@@ -497,6 +497,42 @@ nav.primary a:hover{color:var(--gold)}
 }
 
 /* ============================================================
+   COMPLETE YOUR PROTECTION — full-suite cross-sell
+   ============================================================ */
+.suite{padding:96px 0 100px;background:#fff}
+.suite-head{max-width:60ch}
+.suite-head h2{font-size:clamp(1.9rem,3.4vw,2.7rem);font-weight:800;color:var(--navy);margin-top:16px;letter-spacing:-.025em;line-height:1.1}
+.suite-head h2 .accent{color:var(--gold-deep)}
+.suite-head p{margin-top:16px;color:#54607f;font-size:1.06rem;line-height:1.55}
+
+.suite-row{margin-top:48px;display:grid;grid-template-columns:repeat(5,1fr);gap:16px}
+.suite-item{display:flex;flex-direction:column;gap:14px;align-items:flex-start}
+.suite-item .si{
+  width:54px;height:54px;display:flex;align-items:center;justify-content:center;flex:none;
+  color:var(--c,var(--gold-deep));border-radius:50%;background:transparent;
+  box-shadow:inset 0 0 0 1.5px var(--brd,rgba(216,190,117,.45));
+  transition:transform .3s var(--ease);
+}
+.suite-item .si svg{width:26px;height:26px}
+.suite-item .st b{display:block;font-size:1rem;font-weight:700;color:var(--navy);letter-spacing:-.01em;line-height:1.25}
+.suite-item .st span{display:block;margin-top:4px;font-size:.84rem;font-weight:600;color:#8089a3;line-height:1.4}
+.suite-item:hover .si{transform:translateY(-3px)}
+
+.suite-item.s-shield{--c:var(--gold-deep);--brd:rgba(216,190,117,.45)}
+.suite-item.s-web   {--c:var(--blue);     --brd:rgba(75,66,247,.30)}
+.suite-item.s-mail  {--c:var(--crimson);  --brd:rgba(255,0,66,.28)}
+.suite-item.s-365   {--c:var(--navy);     --brd:rgba(15,23,79,.20)}
+.suite-item.s-cloud {--c:var(--blue);     --brd:rgba(75,66,247,.30)}
+
+@media(max-width:1040px){
+  .suite-row{grid-template-columns:repeat(3,1fr);gap:28px 16px}
+}
+@media(max-width:560px){
+  .suite{padding:80px 0 84px}
+  .suite-row{grid-template-columns:repeat(2,1fr);gap:26px 14px}
+}
+
+/* ============================================================
    DEPLOYED — partner co-brand + enterprise logos + agencies
    Reference patterns: Linear / Stripe / Mercury customer strips,
    plus Tailscale-style country callout banners.
@@ -1180,7 +1216,8 @@ footer .logo .word{color:#fff}
 .co-upsell-h{font-weight:700;color:var(--navy);margin-bottom:12px}
 .co-upsell-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line-dark)}
 .co-upsell-row:first-of-type{border-top:0}
-.co-upsell-ic{width:34px;height:34px;border-radius:9px;background:var(--peri-tint);flex:none}
+.co-upsell-ic{width:34px;height:34px;border-radius:9px;background:var(--peri-tint);flex:none;display:flex;align-items:center;justify-content:center;color:var(--navy)}
+.co-upsell-ic svg{width:19px;height:19px}
 .co-upsell-info{flex:1;display:flex;flex-direction:column;line-height:1.3}
 .co-upsell-info b{color:var(--navy);font-size:.95rem}
 .co-upsell-info span{color:var(--navy);opacity:.6;font-size:.8rem}
@@ -1212,6 +1249,22 @@ footer .logo .word{color:#fff}
 .co-widget:empty{margin:0}
 
 .co-footer{background:var(--navy);color:var(--peri);text-align:center;padding:22px;font-size:.85rem}
+
+/* ---------- Checkout popup (modal) ---------- */
+.co-modal-overlay{position:fixed;inset:0;z-index:100;background:rgba(7,11,29,.62);
+  backdrop-filter:blur(3px);display:flex;align-items:flex-start;justify-content:center;
+  padding:32px 16px;overflow-y:auto}
+.co-modal{background:var(--peri-tint);border-radius:20px;width:100%;max-width:1100px;
+  box-shadow:0 30px 80px -30px rgba(7,11,29,.7);overflow:hidden;margin:auto}
+.co-modal-head{background:var(--navy);color:#fff;display:flex;align-items:center;
+  justify-content:space-between;padding:18px 24px}
+.co-modal-head .co-brand-word{color:#fff;font-size:1.15rem;font-weight:700}
+.co-modal-head .co-brand-word b{color:var(--gold)}
+.co-modal-close{background:rgba(255,255,255,.12);border:0;color:#fff;width:38px;height:38px;
+  border-radius:10px;font-size:1.5rem;line-height:1;cursor:pointer}
+.co-modal-close:hover{background:rgba(255,255,255,.22)}
+.co-modal-body{padding:28px;max-height:calc(100vh - 64px - 64px);overflow-y:auto}
+@media(max-width:880px){.co-modal-body{padding:18px}}
 
 .co-result{min-height:100vh;background:var(--peri-tint);display:grid;place-items:center;padding:32px}
 .co-result-card{background:#fff;border-radius:20px;padding:40px;max-width:520px;text-align:center;

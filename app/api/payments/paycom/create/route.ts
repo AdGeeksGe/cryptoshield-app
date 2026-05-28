@@ -15,7 +15,7 @@ function originOf(req: NextRequest): string {
 export async function POST(req: NextRequest) {
   if (!isPaycomConfigured()) {
     return NextResponse.json(
-      { error: "Pay.com is not configured on the server." },
+      { error: "Online payments are not configured on the server." },
       { status: 503 },
     );
   }
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     console.error("[paycom] create session error:", err);
     return NextResponse.json(
-      { error: "Could not start Pay.com payment." },
+      { error: "Could not start online payment." },
       { status: 502 },
     );
   }
