@@ -53,7 +53,7 @@ export default function CheckoutClient() {
   const [billing, setBilling] = useState<Billing>(EMPTY_BILLING);
   const [selectedAddons, setSelectedAddons] = useState<Set<string>>(new Set());
   const [gateway, setGateway] = useState<GatewayId>(
-    gatewayEnabled.paycom ? "paycom" : "bridgerpay",
+    gatewayEnabled.bridgerpay ? "bridgerpay" : "paycom",
   );
   const [status, setStatus] = useState<"idle" | "loading" | "ready" | "error">(
     "idle",
@@ -121,7 +121,7 @@ export default function CheckoutClient() {
           body: JSON.stringify(payload),
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Pay.com error");
+        if (!res.ok) throw new Error(data.error || "Online payment error");
         await mountPaycom(data.clientSecret, data.publishableKey);
       } else {
         const res = await fetch("/api/payments/bridgerpay/session", {
@@ -130,7 +130,7 @@ export default function CheckoutClient() {
           body: JSON.stringify(payload),
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "BridgerPay error");
+        if (!res.ok) throw new Error(data.error || "PayPal error");
         mountBridgerPay(data.cashierKey, data.cashierToken);
       }
       setStatus("ready");
@@ -221,21 +221,21 @@ export default function CheckoutClient() {
 
         {/* ---------------- Payment methods ---------------- */}
         <div className="co-pay">
-          {gatewayEnabled.paycom && (
-            <label className={"co-method" + (gateway === "paycom" ? " sel" : "")}>
-              <input type="radio" name="gw" checked={gateway === "paycom"} onChange={() => setGateway("paycom")} />
-              <span className="co-method-body">
-                <b>Pay.com</b>
-                <small>Cards, wallets & local methods via Pay.com.</small>
-              </span>
-            </label>
-          )}
           {gatewayEnabled.bridgerpay && (
             <label className={"co-method" + (gateway === "bridgerpay" ? " sel" : "")}>
               <input type="radio" name="gw" checked={gateway === "bridgerpay"} onChange={() => setGateway("bridgerpay")} />
               <span className="co-method-body">
-                <b>BridgerPay</b>
-                <small>Pay securely through the BridgerPay cashier.</small>
+                <b>PayPal</b>
+                <small>Pay via PayPal.</small>
+              </span>
+            </label>
+          )}
+          {gatewayEnabled.paycom && (
+            <label className={"co-method" + (gateway === "paycom" ? " sel" : "")}>
+              <input type="radio" name="gw" checked={gateway === "paycom"} onChange={() => setGateway("paycom")} />
+              <span className="co-method-body">
+                <b>Online payments</b>
+                <small>Cards, wallets & local payment methods.</small>
               </span>
             </label>
           )}
@@ -309,7 +309,7 @@ async function mountPaycom(clientSecret: string, publishableKey: string) {
       create: (o: { clientSecret: string }) => { mount: (sel: string) => void };
     };
   };
-  if (!w.Paycom) throw new Error("Pay.com SDK did not load.");
+  if (!w.Paycom) throw new Error("Online payments could not load.");
   const instance = w.Paycom(publishableKey);
   const component = instance.create({ clientSecret });
   component.mount("#paycom-container");

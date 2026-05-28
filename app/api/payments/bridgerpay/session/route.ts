@@ -10,7 +10,7 @@ export const runtime = "nodejs";
 export async function POST(req: NextRequest) {
   if (!isBridgerPayConfigured()) {
     return NextResponse.json(
-      { error: "BridgerPay is not configured on the server." },
+      { error: "PayPal is not configured on the server." },
       { status: 503 },
     );
   }
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     console.error("[bridgerpay] create session error:", err);
     return NextResponse.json(
-      { error: "Could not start BridgerPay payment." },
+      { error: "Could not start PayPal payment." },
       { status: 502 },
     );
   }
