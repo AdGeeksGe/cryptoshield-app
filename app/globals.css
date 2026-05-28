@@ -1223,6 +1223,22 @@ footer .logo .word{color:#fff}
 
 .co-footer{background:var(--navy);color:var(--peri);text-align:center;padding:22px;font-size:.85rem}
 
+/* ---------- Checkout popup (modal) ---------- */
+.co-modal-overlay{position:fixed;inset:0;z-index:100;background:rgba(7,11,29,.62);
+  backdrop-filter:blur(3px);display:flex;align-items:flex-start;justify-content:center;
+  padding:32px 16px;overflow-y:auto}
+.co-modal{background:var(--peri-tint);border-radius:20px;width:100%;max-width:1100px;
+  box-shadow:0 30px 80px -30px rgba(7,11,29,.7);overflow:hidden;margin:auto}
+.co-modal-head{background:var(--navy);color:#fff;display:flex;align-items:center;
+  justify-content:space-between;padding:18px 24px}
+.co-modal-head .co-brand-word{color:#fff;font-size:1.15rem;font-weight:700}
+.co-modal-head .co-brand-word b{color:var(--gold)}
+.co-modal-close{background:rgba(255,255,255,.12);border:0;color:#fff;width:38px;height:38px;
+  border-radius:10px;font-size:1.5rem;line-height:1;cursor:pointer}
+.co-modal-close:hover{background:rgba(255,255,255,.22)}
+.co-modal-body{padding:28px;max-height:calc(100vh - 64px - 64px);overflow-y:auto}
+@media(max-width:880px){.co-modal-body{padding:18px}}
+
 .co-result{min-height:100vh;background:var(--peri-tint);display:grid;place-items:center;padding:32px}
 .co-result-card{background:#fff;border-radius:20px;padding:40px;max-width:520px;text-align:center;
   box-shadow:var(--shadow-card)}

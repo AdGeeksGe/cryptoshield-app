@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import LandingInteractions from "@/components/LandingInteractions";
+import CheckoutModal from "@/components/CheckoutModal";
 
 // The marketing landing page is rendered from the original hand-authored
 // markup so the design stays pixel-identical to the source. It is trusted,
@@ -17,6 +18,7 @@ export default function HomePage() {
     <>
       <div dangerouslySetInnerHTML={{ __html: html }} />
       <LandingInteractions />
+      <CheckoutModal />
     </>
   );
 }
