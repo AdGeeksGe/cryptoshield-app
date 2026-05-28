@@ -1,5 +1,11 @@
 import type { Metadata } from "next";
 import "./globals.css";
+import StatsigBootstrap from "@/components/StatsigBootstrap";
+import {
+  STATSIG_CLIENT_KEY,
+  getStatsigBootstrap,
+  getStatsigUser,
+} from "@/lib/statsig";
 
 export const metadata: Metadata = {
   title:
@@ -8,11 +14,27 @@ export const metadata: Metadata = {
     "CryptoShield protects your phone from scams, phishing, fake Wi-Fi, and account theft — with friendly support that stays with you until it’s sorted. From the team at CyberNoble365.",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const user = getStatsigUser();
+  const bootstrapValues = await getStatsigBootstrap(user);
+
+  const tree =
+    STATSIG_CLIENT_KEY && bootstrapValues ? (
+      <StatsigBootstrap
+        sdkKey={STATSIG_CLIENT_KEY}
+        userID={user.userID ?? "anonymous"}
+        values={bootstrapValues}
+      >
+        {children}
+      </StatsigBootstrap>
+    ) : (
+      children
+    );
+
   return (
     <html lang="en">
       <head>
@@ -27,7 +49,7 @@ export default function RootLayout({
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>{tree}</body>
     </html>
   );
 }
