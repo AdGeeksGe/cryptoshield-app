@@ -1,8 +1,10 @@
 import Link from "next/link";
+import CheckoutSuccessTracker from "@/components/CheckoutSuccessTracker";
 
 export default function CheckoutSuccess() {
   return (
     <div className="co-result">
+      <CheckoutSuccessTracker />
       <div className="co-result-card">
         <h1>Thank you — your payment is being confirmed.</h1>
         <p>

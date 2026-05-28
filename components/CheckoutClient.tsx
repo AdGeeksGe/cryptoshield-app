@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, type ReactNode } from "react";
+import { useStatsigClient } from "@statsig/react-bindings";
 import { formatMoney, gatewayEnabled, type GatewayId } from "@/lib/order";
 
 interface Addon {
@@ -73,6 +74,7 @@ export default function CheckoutClient() {
     "idle",
   );
   const [errorMsg, setErrorMsg] = useState("");
+  const { logEvent } = useStatsigClient();
 
   const total = useMemo(() => {
     let t = BASE_LINE.price;
@@ -115,6 +117,12 @@ export default function CheckoutClient() {
     }
     setStatus("loading");
     setErrorMsg("");
+
+    logEvent("checkout_started", total, {
+      currency: CURRENCY,
+      gateway,
+      addons: String(selectedAddons.size),
+    });
 
     const payload = {
       amount: total,
