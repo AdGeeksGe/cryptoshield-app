@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import StatsigBootstrap from "@/components/StatsigBootstrap";
+import MyStatsig from "./my-statsig";
 import {
   STATSIG_CLIENT_KEY,
   getStatsigBootstrap,
@@ -23,14 +23,13 @@ export default async function RootLayout({
   const bootstrapValues = await getStatsigBootstrap(user);
 
   const tree =
-    STATSIG_CLIENT_KEY && bootstrapValues ? (
-      <StatsigBootstrap
-        sdkKey={STATSIG_CLIENT_KEY}
+    STATSIG_CLIENT_KEY ? (
+      <MyStatsig
         userID={user.userID ?? "anonymous"}
-        values={bootstrapValues}
+        bootstrapValues={bootstrapValues}
       >
         {children}
-      </StatsigBootstrap>
+      </MyStatsig>
     ) : (
       children
     );
