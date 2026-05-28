@@ -36,6 +36,7 @@
 
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
+html,body{max-width:100%;overflow-x:hidden}
 body{
   margin:0;
   font-family:"Outfit", system-ui, -apple-system, sans-serif;
@@ -147,7 +148,8 @@ nav.primary a:hover{color:var(--gold)}
   padding:7px 14px 7px 9px;border-radius:99px;
   font-size:.85rem;font-weight:500;color:#fff;margin-top:14px;
 }
-.app-badge .bdg-ic{width:24px;height:24px;border-radius:7px;background:linear-gradient(135deg,var(--blue),var(--gold));display:flex;align-items:center;justify-content:center}
+.app-badge .bdg-tx{text-align:left;line-height:1.25}
+.app-badge .bdg-ic{width:24px;height:24px;border-radius:7px;flex:none;background:linear-gradient(135deg,var(--blue),var(--gold));display:flex;align-items:center;justify-content:center}
 .app-badge .bdg-ic svg{width:13px;height:13px;color:#fff}
 .app-badge b{font-weight:700;color:var(--gold)}
 .hero h1{
@@ -1087,7 +1089,7 @@ footer .logo .word{color:#fff}
   .logo-strip{grid-template-columns:repeat(3,1fr)}
 }
 @media(max-width:880px){
-  nav.primary,.header-cta .link{display:none}
+  nav.primary,.header-cta .link,.header-cta .btn{display:none}
   .menu-toggle{display:flex}
   .hero{padding:130px 0 80px}
   .hero-grid{grid-template-columns:1fr;gap:48px}
@@ -1095,6 +1097,8 @@ footer .logo .word{color:#fff}
   .hero h1{max-width:20ch}
   .hero-left{text-align:center;display:flex;flex-direction:column;align-items:center}
   .hero-cta-row{justify-content:center}
+  .hero-micro{display:block;text-align:center}
+  .hero-micro svg{display:inline-block;vertical-align:middle;margin-right:6px}
   .hero-visual{order:2;min-height:480px}
   .cs-notif-1{left:-10px}
   .cs-notif-2{right:-10px}
@@ -1115,6 +1119,11 @@ footer .logo .word{color:#fff}
 }
 @media(max-width:560px){
   body{font-size:16px}
+  .app-badge .bdg-ic{display:none}
+  .app-badge{padding-left:14px;justify-content:center}
+  .app-badge .bdg-tx{text-align:center;flex:1}
+  .patent-row{flex-direction:column;align-items:stretch;width:100%}
+  .patent-badge{width:100%}
   .sec{padding:72px 0}
   .inside{padding:84px 0}
   .proof{padding:84px 0}
