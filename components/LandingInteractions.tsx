@@ -5,7 +5,7 @@ import { useEffect } from "react";
 // Re-implements the original landing page's vanilla-JS behaviour as a
 // client-side effect that runs against the server-rendered markup:
 // sticky header, mobile menu, optional pricing toggle, FAQ accordion,
-// scroll-reveal, and a no-redirect handler for the free health-check form.
+// and scroll-reveal.
 export default function LandingInteractions() {
   useEffect(() => {
     const cleanups: Array<() => void> = [];
@@ -127,23 +127,6 @@ export default function LandingInteractions() {
     );
     document.querySelectorAll(".reveal").forEach((el) => io.observe(el));
     cleanups.push(() => io.disconnect());
-
-    /* ---------- Free health-check form (no page reload) ---------- */
-    const form = document.querySelector<HTMLFormElement>(".diag-form");
-    if (form) {
-      const onSubmit = (ev: Event) => {
-        ev.preventDefault();
-        if (!form.checkValidity()) {
-          form.reportValidity();
-          return;
-        }
-        form.innerHTML =
-          '<div class="diag-form-h">Thanks — your request is in.</div>' +
-          '<p style="color:var(--peri);margin-top:8px">A CyberNoble365 specialist will email your free health check shortly.</p>';
-      };
-      form.addEventListener("submit", onSubmit);
-      cleanups.push(() => form.removeEventListener("submit", onSubmit));
-    }
 
     return () => cleanups.forEach((fn) => fn());
   }, []);
