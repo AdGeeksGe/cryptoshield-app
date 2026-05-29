@@ -176,6 +176,8 @@ nav.primary a:hover{color:var(--gold)}
   transition:transform .25s var(--ease),border-color .25s var(--ease),background .25s;
   cursor:default;
 }
+a.patent-badge{cursor:pointer;text-decoration:none}
+a.patent-badge:hover{transform:translateY(-2px);border-color:rgba(216,190,117,.7);background:linear-gradient(180deg, rgba(255,255,255,.1), rgba(255,255,255,.05))}
 .patent-flag{
   width:40px;height:40px;border-radius:50%;flex:none;overflow:hidden;
   box-shadow:0 6px 14px -6px rgba(0,0,0,.55), inset 0 0 0 1.5px rgba(216,190,117,.45);
@@ -248,16 +250,17 @@ nav.primary a:hover{color:var(--gold)}
 /* Floating notification cards beside the phone */
 .cs-notif{
   position:absolute;z-index:4;
-  background:#fff;color:var(--navy);
+  background:rgba(15,23,79,.55);color:#eaeefc;
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   border-radius:18px;padding:13px 16px 13px 13px;
   display:flex;gap:12px;align-items:center;min-width:228px;
-  box-shadow:0 28px 60px -22px rgba(0,0,0,.55), 0 8px 20px -10px rgba(15,23,79,.45);
-  border:1px solid rgba(255,255,255,.7);
+  box-shadow:0 28px 60px -24px rgba(0,0,0,.6), 0 6px 16px -10px rgba(0,0,0,.5);
+  border:1px solid rgba(255,255,255,.12);
 }
 .cs-notif .nic{width:38px;height:38px;border-radius:11px;flex:none;display:flex;align-items:center;justify-content:center}
 .cs-notif .nic svg{width:20px;height:20px}
-.cs-notif b{display:block;font-size:.94rem;font-weight:700;line-height:1.2;color:var(--navy)}
-.cs-notif span{display:block;font-size:.76rem;color:#8089a3;margin-top:2px;line-height:1.3}
+.cs-notif b{display:block;font-size:.94rem;font-weight:700;line-height:1.2;color:#f4f6ff}
+.cs-notif span{display:block;font-size:.76rem;color:#9aa3c4;margin-top:2px;line-height:1.3}
 .cs-notif-1{top:8%;left:-46px;animation:floaty 6.5s ease-in-out infinite}
 .cs-notif-1 .nic{background:rgba(255,0,66,.12);color:var(--crimson)}
 .cs-notif-2{bottom:14%;right:-58px;animation:floaty 6.5s ease-in-out -2.2s infinite}
@@ -1052,8 +1055,9 @@ section{position:relative}
 .fc-mini-phone .scr .t{font-size:.62rem;color:#7ef0b0;margin-top:6px;font-weight:700;letter-spacing:.06em;text-transform:uppercase}
 
 @media(max-width:1040px){
-  .final-card{grid-template-columns:120px 1fr 200px;padding:30px 30px;gap:24px}
+  .final-card{grid-template-columns:120px 1fr;padding:30px 30px;gap:24px}
   .fc-shield{width:96px}
+  .fc-image{display:none}
 }
 @media(max-width:880px){
   .final{padding:60px 0 80px}
@@ -1062,21 +1066,15 @@ section{position:relative}
   .fc-shield{width:88px}
   .fc-content{display:flex;flex-direction:column;align-items:center}
   .fc-content p{margin-left:auto;margin-right:auto}
-  .fc-image{width:100%;max-width:340px;margin:0 auto;height:200px;border-radius:20px}
-  .fc-image::after{display:none}
 }
 
 /* ============================================================
    FOOTER
    ============================================================ */
-footer{background:var(--ink);color:var(--peri);padding:56px 0 34px}
-.foot-simple{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap;padding-bottom:32px;border-bottom:1px solid rgba(198,203,234,.12)}
+footer{background:var(--ink);color:var(--peri);padding:70px 0 34px}
+.foot-main{display:flex;flex-direction:column;align-items:center;text-align:center;padding-bottom:40px;border-bottom:1px solid rgba(198,203,234,.12)}
 footer .logo .word{color:#fff}
-.foot-simple .socials{display:flex;gap:12px}
-.foot-simple .socials a{width:38px;height:38px;border-radius:10px;background:rgba(255,255,255,.06);display:flex;align-items:center;justify-content:center;transition:background .2s,transform .2s}
-.foot-simple .socials a:hover{background:var(--gold);transform:translateY(-2px)}
-.foot-simple .socials a:hover svg{color:var(--ink)}
-.foot-simple .socials svg{width:18px;height:18px;color:#fff}
+.foot-main p{margin-top:18px;font-size:.95rem;color:var(--peri);max-width:46ch}
 .foot-bottom{padding-top:26px;display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap;font-size:.88rem;color:rgba(198,203,234,.6)}
 .foot-bottom a{color:rgba(198,203,234,.6)}
 .foot-bottom a:hover{color:var(--gold)}
@@ -1165,7 +1163,6 @@ footer .logo .word{color:#fff}
   .cs-notif .nic{width:34px;height:34px}
   .cs-notif b{font-size:.86rem}
   .cs-notif span{font-size:.7rem}
-  .foot-simple{flex-direction:column;align-items:flex-start;gap:24px}
   .logo-strip{grid-template-columns:repeat(2,1fr);gap:14px}
   .lg-cell{height:74px;font-size:.92rem}
 }
