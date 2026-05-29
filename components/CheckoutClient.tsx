@@ -152,7 +152,7 @@ export default function CheckoutClient() {
           body: JSON.stringify(payload),
         });
         const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "PayPal error");
+        if (!res.ok) throw new Error(data.error || "BridgerPay error");
         mountBridgerPay(data.cashierKey, data.cashierToken);
       }
       setStatus("ready");
@@ -247,8 +247,8 @@ export default function CheckoutClient() {
             <label className={"co-method" + (gateway === "bridgerpay" ? " sel" : "")}>
               <input type="radio" name="gw" checked={gateway === "bridgerpay"} onChange={() => setGateway("bridgerpay")} />
               <span className="co-method-body">
-                <b>PayPal</b>
-                <small>Pay via PayPal.</small>
+                <b>Card payment</b>
+                <small>Pay securely by debit or credit card.</small>
               </span>
             </label>
           )}
