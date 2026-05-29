@@ -31,6 +31,10 @@ function escapeHtml(s: string): string {
     .replace(/>/g, "&gt;");
 }
 
+function escapeAttr(s: string): string {
+  return escapeHtml(s).replace(/"/g, "&quot;");
+}
+
 function escapeRegExp(s: string): string {
   return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -74,15 +78,38 @@ function applyHeadline(html: string, value: string): string {
   );
 }
 
+// A/B test — hero visual. Control (empty src) keeps the built-in CSS/SVG phone
+// mockup. The variant supplies an image URL via the Statsig experiment
+// "landing_hero_visual" (string parameter "hero_image_src"); when set, the whole
+// .hero-visual block is replaced with that image. The regex keeps the original
+// <div class="hero-visual"> opener and the four closing tags that follow the
+// block (hero-visual, hero-grid, wrap, section), swapping only the inner mockup.
+const VISUAL_EXPERIMENT = "landing_hero_visual";
+const VISUAL_PARAM = "hero_image_src";
+const VISUAL_DEFAULT = "";
+
+function applyHeroVisual(html: string, src: string): string {
+  if (!src) return html;
+  const img = `<img src="${escapeAttr(src)}" alt="" class="hero-visual-img" />`;
+  return html.replace(
+    /(<div class="hero-visual[^"]*"[^>]*>)[\s\S]*?(<\/div>\s*<\/div>\s*<\/div>\s*<\/section>)/,
+    (_m, open: string, close: string) => `${open}${img}${close}`,
+  );
+}
+
 export default async function HomePage() {
   const html = getLandingMarkup();
   const user = getStatsigUser();
-  const [ctaText, headline] = await Promise.all([
+  const [ctaText, headline, heroSrc] = await Promise.all([
     getExperimentParam(user, CTA_EXPERIMENT, CTA_PARAM, CTA_DEFAULT),
     getExperimentParam(user, HEADLINE_EXPERIMENT, HEADLINE_PARAM, HEADLINE_DEFAULT),
+    getExperimentParam(user, VISUAL_EXPERIMENT, VISUAL_PARAM, VISUAL_DEFAULT),
   ]);
 
-  const rendered = applyHeadline(applyCtaCopy(html, ctaText), headline);
+  const rendered = applyHeroVisual(
+    applyHeadline(applyCtaCopy(html, ctaText), headline),
+    heroSrc,
+  );
 
   return (
     <>

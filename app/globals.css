@@ -198,6 +198,8 @@ a.patent-badge:hover{transform:translateY(-2px);border-color:rgba(216,190,117,.7
 .hero-visual{position:relative;min-height:520px;display:flex;align-items:center;justify-content:center}
 .hero-visual .halo{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:470px;height:470px;border-radius:50%;
   background:radial-gradient(closest-side, rgba(198,203,234,.18), rgba(75,66,247,.13) 52%, rgba(15,23,79,0) 72%);}
+/* A/B variant: rendered hero image shown in place of the built-in CSS mockup. */
+.hero-visual-img{position:relative;z-index:3;width:100%;max-width:620px;height:auto;display:block;filter:drop-shadow(0 50px 90px rgba(0,0,0,.55))}
 
 /* Big main phone */
 .cs-phone{
