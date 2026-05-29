@@ -13,15 +13,16 @@ function getLandingMarkup() {
   return fs.readFileSync(file, "utf8");
 }
 
-// A/B test — hero call-to-action copy. The variant text comes from the Statsig
-// experiment "landing_hero_cta" (string parameter "hero_cta_text"); the control
-// group keeps the original wording. The swap is scoped to the hero CTA alone:
-// the same copy also appears in the header, mobile menu, and a mid-page block,
-// which this regex deliberately leaves untouched so the experiment isolates the
-// hero. Rendered server-side, so there is no variant flicker on first paint.
-const HERO_CTA_EXPERIMENT = "landing_hero_cta";
-const HERO_CTA_PARAM = "hero_cta_text";
-const HERO_CTA_DEFAULT = "Secure Your Phone Now →";
+// A/B test — primary call-to-action copy across the whole landing page. The
+// variant text comes from the Statsig experiment "landing_hero_cta" (string
+// parameter "hero_cta_text"); the control group keeps the original wording.
+// Every primary CTA shares the same copy (header, mobile menu, hero, mid-page,
+// and footer band), so the swap targets each `btn btn-primary` anchor that
+// currently holds the control text — keeping all CTAs consistent within a
+// group. Rendered server-side, so there is no variant flicker on first paint.
+const CTA_EXPERIMENT = "landing_hero_cta";
+const CTA_PARAM = "hero_cta_text";
+const CTA_DEFAULT = "Secure Your Phone Now →";
 
 function escapeHtml(s: string): string {
   return s
@@ -30,26 +31,35 @@ function escapeHtml(s: string): string {
     .replace(/>/g, "&gt;");
 }
 
-function applyHeroCta(html: string, text: string): string {
-  if (text === HERO_CTA_DEFAULT) return html;
-  return html.replace(
-    /(<div class="hero-cta-row[^"]*">\s*<a href="#diagnose" class="btn btn-primary">)[^<]*(<\/a>)/,
-    (_m, open: string, close: string) => `${open}${escapeHtml(text)}${close}`,
+function escapeRegExp(s: string): string {
+  return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function applyCtaCopy(html: string, text: string): string {
+  if (text === CTA_DEFAULT) return html;
+  // Replace the inner text of every primary CTA anchor that holds the control
+  // copy. Scoping to `btn-primary` + the exact control text avoids touching any
+  // unrelated text and is robust to per-anchor attribute differences
+  // (e.g. href="/checkout" vs "#diagnose", the data-close flag).
+  const re = new RegExp(
+    `(<a\\b[^>]*class="[^"]*\\bbtn-primary\\b[^"]*"[^>]*>)${escapeRegExp(CTA_DEFAULT)}(</a>)`,
+    "g",
   );
+  return html.replace(re, (_m, open: string, close: string) => `${open}${escapeHtml(text)}${close}`);
 }
 
 export default async function HomePage() {
   const html = getLandingMarkup();
   const ctaText = await getExperimentParam(
     getStatsigUser(),
-    HERO_CTA_EXPERIMENT,
-    HERO_CTA_PARAM,
-    HERO_CTA_DEFAULT,
+    CTA_EXPERIMENT,
+    CTA_PARAM,
+    CTA_DEFAULT,
   );
 
   return (
     <>
-      <div dangerouslySetInnerHTML={{ __html: applyHeroCta(html, ctaText) }} />
+      <div dangerouslySetInnerHTML={{ __html: applyCtaCopy(html, ctaText) }} />
       <LandingInteractions />
       <CheckoutModal />
     </>
