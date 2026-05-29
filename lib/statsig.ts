@@ -63,6 +63,21 @@ export async function getStatsigBootstrap(
   return values ? JSON.stringify(values) : null;
 }
 
+// Reads a string parameter from a running experiment and logs an exposure for
+// this user. The hero CTA test renders entirely server-side (the copy is baked
+// into the landing HTML before it reaches the browser), so the exposure belongs
+// here rather than in a client hook. Falls back to `fallback` when Statsig is
+// unconfigured or the parameter is unset, so the page renders the control.
+export async function getExperimentParam(
+  user: StatsigUser,
+  experiment: string,
+  param: string,
+  fallback: string,
+): Promise<string> {
+  if (!(await ensureInitialized())) return fallback;
+  return Statsig.getExperiment(user, experiment).get(param, fallback);
+}
+
 export async function logStatsigEvent(
   user: StatsigUser,
   eventName: string,
