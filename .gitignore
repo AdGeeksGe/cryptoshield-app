@@ -25,3 +25,6 @@ next-env.d.ts
 # Local server logs / temp
 *.log
 .cache/
+
+# Full-res image masters (optimized copies live in public/)
+.image-originals/

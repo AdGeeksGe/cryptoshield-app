@@ -140,7 +140,7 @@ nav.primary a:hover{color:var(--gold)}
 .breadcrumb a:hover{color:var(--gold)}
 .breadcrumb .sep{color:rgba(198,203,234,.5)}
 .breadcrumb .cur{color:rgba(198,203,234,.7)}
-.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px 52px;align-items:center}
+.hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px 24px;align-items:center}
 .kicker{font-size:1rem;font-weight:700;color:var(--crimson)}
 .app-badge{
   display:inline-flex;align-items:center;gap:9px;
@@ -198,8 +198,12 @@ a.patent-badge:hover{transform:translateY(-2px);border-color:rgba(216,190,117,.7
 .hero-visual{position:relative;min-height:520px;display:flex;align-items:center;justify-content:center}
 .hero-visual .halo{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:470px;height:470px;border-radius:50%;
   background:radial-gradient(closest-side, rgba(198,203,234,.18), rgba(75,66,247,.13) 52%, rgba(15,23,79,0) 72%);}
-/* A/B variant: rendered hero image shown in place of the built-in CSS mockup. */
-.hero-visual-img{position:relative;z-index:3;width:100%;max-width:620px;height:auto;display:block;filter:drop-shadow(0 50px 90px rgba(0,0,0,.55))}
+/* A/B variant: rendered hero image shown in place of the built-in CSS mockup.
+   Scaled up and anchored at its left edge so the subject fills the right side
+   and overflows toward the viewport edge (body{overflow-x:hidden} clips it
+   cleanly). Reset to a centered, contained size on mobile below. */
+.hero-visual-img{position:relative;z-index:3;width:100%;max-width:none;height:auto;display:block;
+  transform:scale(1.55);transform-origin:left center;filter:drop-shadow(0 50px 90px rgba(0,0,0,.55))}
 
 /* Big main phone */
 .cs-phone{
@@ -1132,6 +1136,7 @@ footer .logo .word{color:#fff}
   .hero-micro{display:block;text-align:center}
   .hero-micro svg{display:inline-block;vertical-align:middle;margin-right:6px}
   .hero-visual{order:2;min-height:480px}
+  .hero-visual-img{transform:none;width:100%;max-width:380px;margin:0 auto}
   .cs-notif-1{left:-10px}
   .cs-notif-2{right:-10px}
   .cs-notif-3{right:-20px}
