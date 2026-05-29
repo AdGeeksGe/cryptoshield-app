@@ -1,7 +1,14 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
-import { formatMoney, gatewayEnabled, type GatewayId } from "@/lib/order";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useStatsigClient } from "@statsig/react-bindings";
+import {
+  BRIDGERPAY_SINGLE_METHOD,
+  formatMoney,
+  isLocalHost,
+  paymentMethodEnabled,
+  type PaymentMethod,
+} from "@/lib/order";
 
 interface Addon {
   id: string;
@@ -66,19 +73,30 @@ const EMPTY_BILLING: Billing = {
 export default function CheckoutClient() {
   const [billing, setBilling] = useState<Billing>(EMPTY_BILLING);
   const [selectedAddons, setSelectedAddons] = useState<Set<string>>(new Set());
-  const [gateway, setGateway] = useState<GatewayId>(
-    gatewayEnabled.bridgerpay ? "bridgerpay" : "paycom",
+  const [method, setMethod] = useState<PaymentMethod>(
+    paymentMethodEnabled.paypal ? "paypal" : "online",
   );
   const [status, setStatus] = useState<"idle" | "loading" | "ready" | "error">(
     "idle",
   );
   const [errorMsg, setErrorMsg] = useState("");
+  // On localhost every product is free so checkout can be tested without a
+  // real charge. Resolved after mount (window is client-only); SSR shows real
+  // prices, then it reconciles to $0 on a local host.
+  const [isLocal, setIsLocal] = useState(false);
+  const { logEvent } = useStatsigClient();
+
+  useEffect(() => {
+    setIsLocal(isLocalHost(window.location.hostname));
+  }, []);
+
+  const priceOf = (p: number) => (isLocal ? 0 : p);
 
   const total = useMemo(() => {
-    let t = BASE_LINE.price;
-    for (const a of ADDONS) if (selectedAddons.has(a.id)) t += a.price;
+    let t = priceOf(BASE_LINE.price);
+    for (const a of ADDONS) if (selectedAddons.has(a.id)) t += priceOf(a.price);
     return t;
-  }, [selectedAddons]);
+  }, [selectedAddons, isLocal]);
 
   const set = (k: keyof Billing) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setBilling((b) => ({ ...b, [k]: e.target.value }));
@@ -116,37 +134,37 @@ export default function CheckoutClient() {
     setStatus("loading");
     setErrorMsg("");
 
+    logEvent("checkout_started", total, {
+      currency: CURRENCY,
+      method,
+      addons: String(selectedAddons.size),
+    });
+
     const payload = {
       amount: total,
       currency: CURRENCY,
       country: "US",
+      paymentType: method,
       customer: {
         firstName: billing.firstName,
         lastName: billing.lastName,
         email: billing.email,
+        phone: billing.phone,
+        address: billing.address,
+        city: billing.city,
+        zipCode: billing.postcode,
       },
     };
 
     try {
-      if (gateway === "paycom") {
-        const res = await fetch("/api/payments/paycom/create", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "Online payment error");
-        await mountPaycom(data.clientSecret, data.publishableKey);
-      } else {
-        const res = await fetch("/api/payments/bridgerpay/session", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || "PayPal error");
-        mountBridgerPay(data.cashierKey, data.cashierToken);
-      }
+      const res = await fetch("/api/payments/bridgerpay/session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Payment error");
+      mountBridgerPay(data.cashierKey, data.cashierToken, BRIDGERPAY_SINGLE_METHOD[method]);
       setStatus("ready");
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : "Payment could not be started.");
@@ -188,12 +206,12 @@ export default function CheckoutClient() {
           <tbody>
             <tr>
               <td className="co-prod">{BASE_LINE.name} &nbsp;×&nbsp;1</td>
-              <td className="co-amt">{formatMoney(BASE_LINE.price, CURRENCY)} / year</td>
+              <td className="co-amt">{formatMoney(priceOf(BASE_LINE.price), CURRENCY)} / year</td>
             </tr>
             {ADDONS.filter((a) => selectedAddons.has(a.id)).map((a) => (
               <tr key={a.id}>
                 <td className="co-prod">{a.name} &nbsp;×&nbsp;1</td>
-                <td className="co-amt">{formatMoney(a.price, CURRENCY)} / year</td>
+                <td className="co-amt">{formatMoney(priceOf(a.price), CURRENCY)} / year</td>
               </tr>
             ))}
             <tr className="co-row-strong">
@@ -219,7 +237,7 @@ export default function CheckoutClient() {
                 <div className="co-upsell-ic" aria-hidden="true">{a.icon}</div>
                 <div className="co-upsell-info">
                   <b>{a.name}</b>
-                  <span>{formatMoney(a.price, CURRENCY)} / year · {a.meta}</span>
+                  <span>{formatMoney(priceOf(a.price), CURRENCY)} / year · {a.meta}</span>
                 </div>
                 <button
                   type="button"
@@ -233,20 +251,20 @@ export default function CheckoutClient() {
           })}
         </div>
 
-        {/* ---------------- Payment methods ---------------- */}
+        {/* ---------------- Payment methods (both via BridgerPay) ---------------- */}
         <div className="co-pay">
-          {gatewayEnabled.bridgerpay && (
-            <label className={"co-method" + (gateway === "bridgerpay" ? " sel" : "")}>
-              <input type="radio" name="gw" checked={gateway === "bridgerpay"} onChange={() => setGateway("bridgerpay")} />
+          {paymentMethodEnabled.paypal && (
+            <label className={"co-method" + (method === "paypal" ? " sel" : "")}>
+              <input type="radio" name="gw" checked={method === "paypal"} onChange={() => setMethod("paypal")} />
               <span className="co-method-body">
                 <b>PayPal</b>
                 <small>Pay via PayPal.</small>
               </span>
             </label>
           )}
-          {gatewayEnabled.paycom && (
-            <label className={"co-method" + (gateway === "paycom" ? " sel" : "")}>
-              <input type="radio" name="gw" checked={gateway === "paycom"} onChange={() => setGateway("paycom")} />
+          {paymentMethodEnabled.online && (
+            <label className={"co-method" + (method === "online" ? " sel" : "")}>
+              <input type="radio" name="gw" checked={method === "online"} onChange={() => setMethod("online")} />
               <span className="co-method-body">
                 <b>Online payments</b>
                 <small>Cards, wallets & local payment methods.</small>
@@ -267,8 +285,7 @@ export default function CheckoutClient() {
           {status === "loading" ? "Starting secure payment…" : `Pay ${formatMoney(total, CURRENCY)}`}
         </button>
 
-        {/* Gateway widgets mount here */}
-        <div id="paycom-container" className="co-widget" />
+        {/* BridgerPay cashier mounts here */}
         <div
           id="bridgerpay-container"
           className="co-widget"
@@ -297,52 +314,43 @@ function Field(props: {
   );
 }
 
-/* ----------------------- Gateway widget loaders ----------------------- */
+/* ----------------------- BridgerPay cashier loader ----------------------- */
 
-function loadScript(src: string, attrs?: Record<string, string>): Promise<void> {
-  return new Promise((resolve, reject) => {
-    const s = document.createElement("script");
-    s.src = src;
-    s.async = true;
-    if (attrs) for (const [k, v] of Object.entries(attrs)) s.setAttribute(k, v);
-    s.onload = () => resolve();
-    s.onerror = () => reject(new Error(`Failed to load ${src}`));
-    document.body.appendChild(s);
-  });
-}
-
-// Pay.com Universal Web Component. SDK URL + init match the documented pattern
-// at https://apiref.pay.com/docs/using-the-paycom-sdk — confirm method names
-// against the version your account uses.
-async function mountPaycom(clientSecret: string, publishableKey: string) {
-  const sdkUrl =
-    process.env.NEXT_PUBLIC_PAYCOM_SDK_URL ?? "https://cdn.pay.com/sdk/v1/pay.js";
-  await loadScript(sdkUrl);
-  const w = window as unknown as {
-    Paycom?: (key: string) => {
-      create: (o: { clientSecret: string }) => { mount: (sel: string) => void };
-    };
-  };
-  if (!w.Paycom) throw new Error("Online payments could not load.");
-  const instance = w.Paycom(publishableKey);
-  const component = instance.create({ clientSecret });
-  component.mount("#paycom-container");
-}
-
-// BridgerPay Checkout (Cashier) widget. The launcher script reads the
-// data-cashier-key / data-cashier-token attributes from the container.
-function mountBridgerPay(cashierKey: string, cashierToken: string) {
+// BridgerPay Checkout (Cashier) widget. The launcher script is injected into
+// the container so the cashier renders in-page; `data-single-payment-method`
+// restricts it to one method type (e.g. "apm" for PayPal, "credit_card" for
+// cards) and skips the picker. Some methods (PayPal, 3-D Secure) finish on a
+// redirect, which BridgerPay signals via a `[bp]:redirect` event.
+let bpRedirectBound = false;
+function mountBridgerPay(
+  cashierKey: string,
+  cashierToken: string,
+  singlePaymentMethod?: string,
+) {
   const container = document.getElementById("bridgerpay-container");
-  if (container) {
-    container.setAttribute("data-cashier-key", cashierKey);
-    container.setAttribute("data-cashier-token", cashierToken);
+  if (!container) return;
+  container.innerHTML = "";
+  container.setAttribute("data-cashier-key", cashierKey);
+  container.setAttribute("data-cashier-token", cashierToken);
+
+  if (!bpRedirectBound) {
+    bpRedirectBound = true;
+    window.addEventListener("[bp]:redirect", (e) => {
+      const url = (e as CustomEvent<{ url?: string }>).detail?.url;
+      if (url) (window.top ?? window).location.href = url;
+    });
   }
+
   const checkoutUrl =
     process.env.NEXT_PUBLIC_BRIDGERPAY_CHECKOUT_URL ??
     "https://checkout.bridgerpay.com/v2/launcher";
-  void loadScript(checkoutUrl, {
-    "data-cashier-key": cashierKey,
-    "data-cashier-token": cashierToken,
-    "data-button-text": "Pay now",
-  });
+  const s = document.createElement("script");
+  s.src = checkoutUrl;
+  s.async = true;
+  s.setAttribute("data-cashier-key", cashierKey);
+  s.setAttribute("data-cashier-token", cashierToken);
+  if (singlePaymentMethod) {
+    s.setAttribute("data-single-payment-method", singlePaymentMethod);
+  }
+  container.appendChild(s);
 }

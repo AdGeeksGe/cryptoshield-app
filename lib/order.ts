@@ -4,7 +4,16 @@
 // (env-driven, with a sensible default that matches the current CryptoShield
 // App listing). Amounts are stored in the smallest currency unit (e.g. cents).
 
-export type GatewayId = "paycom" | "bridgerpay";
+// Both checkout options are processed by BridgerPay; they differ only in which
+// payment-method type the cashier is opened with (see CheckoutClient).
+export type PaymentMethod = "paypal" | "online";
+
+// The BridgerPay launcher `data-single-payment-method` value per option. "apm"
+// surfaces alternative methods (PayPal); "credit_card" surfaces card payments.
+export const BRIDGERPAY_SINGLE_METHOD: Record<PaymentMethod, string> = {
+  paypal: process.env.NEXT_PUBLIC_BRIDGERPAY_PAYPAL_METHOD ?? "apm",
+  online: process.env.NEXT_PUBLIC_BRIDGERPAY_ONLINE_METHOD ?? "credit_card",
+};
 
 export interface OrderLine {
   name: string;
@@ -45,6 +54,20 @@ export function getDefaultOrder(): Order {
   };
 }
 
+const LOCAL_HOSTNAMES = new Set(["localhost", "127.0.0.1", "0.0.0.0", "::1"]);
+
+/**
+ * True when a host is a local dev address. Accepts either a request `Host`
+ * header (server) or `window.location.hostname` (browser); the optional port
+ * is stripped. On localhost every product is billed at $0 so the full payment
+ * flow can be exercised without charging real money.
+ */
+export function isLocalHost(host: string | null | undefined): boolean {
+  if (!host) return false;
+  const hostname = host.split(":")[0].toLowerCase();
+  return LOCAL_HOSTNAMES.has(hostname) || hostname.endsWith(".local");
+}
+
 export function formatMoney(minor: number, currency: string): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -52,7 +75,7 @@ export function formatMoney(minor: number, currency: string): string {
   }).format(minor / 100);
 }
 
-export const gatewayEnabled = {
-  paycom: process.env.NEXT_PUBLIC_ENABLE_PAYCOM !== "false",
-  bridgerpay: process.env.NEXT_PUBLIC_ENABLE_BRIDGERPAY !== "false",
+export const paymentMethodEnabled: Record<PaymentMethod, boolean> = {
+  paypal: process.env.NEXT_PUBLIC_ENABLE_PAYPAL !== "false",
+  online: process.env.NEXT_PUBLIC_ENABLE_ONLINE !== "false",
 };
