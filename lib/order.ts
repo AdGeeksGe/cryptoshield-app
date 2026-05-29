@@ -45,6 +45,20 @@ export function getDefaultOrder(): Order {
   };
 }
 
+const LOCAL_HOSTNAMES = new Set(["localhost", "127.0.0.1", "0.0.0.0", "::1"]);
+
+/**
+ * True when a host is a local dev address. Accepts either a request `Host`
+ * header (server) or `window.location.hostname` (browser); the optional port
+ * is stripped. On localhost every product is billed at $0 so the full payment
+ * flow can be exercised without charging real money.
+ */
+export function isLocalHost(host: string | null | undefined): boolean {
+  if (!host) return false;
+  const hostname = host.split(":")[0].toLowerCase();
+  return LOCAL_HOSTNAMES.has(hostname) || hostname.endsWith(".local");
+}
+
 export function formatMoney(minor: number, currency: string): string {
   return new Intl.NumberFormat("en-US", {
     style: "currency",

@@ -1,8 +1,8 @@
 "use client";
 
-import { useMemo, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useStatsigClient } from "@statsig/react-bindings";
-import { formatMoney, gatewayEnabled, type GatewayId } from "@/lib/order";
+import { formatMoney, gatewayEnabled, isLocalHost, type GatewayId } from "@/lib/order";
 
 interface Addon {
   id: string;
@@ -74,13 +74,23 @@ export default function CheckoutClient() {
     "idle",
   );
   const [errorMsg, setErrorMsg] = useState("");
+  // On localhost every product is free so checkout can be tested without a
+  // real charge. Resolved after mount (window is client-only); SSR shows real
+  // prices, then it reconciles to $0 on a local host.
+  const [isLocal, setIsLocal] = useState(false);
   const { logEvent } = useStatsigClient();
 
+  useEffect(() => {
+    setIsLocal(isLocalHost(window.location.hostname));
+  }, []);
+
+  const priceOf = (p: number) => (isLocal ? 0 : p);
+
   const total = useMemo(() => {
-    let t = BASE_LINE.price;
-    for (const a of ADDONS) if (selectedAddons.has(a.id)) t += a.price;
+    let t = priceOf(BASE_LINE.price);
+    for (const a of ADDONS) if (selectedAddons.has(a.id)) t += priceOf(a.price);
     return t;
-  }, [selectedAddons]);
+  }, [selectedAddons, isLocal]);
 
   const set = (k: keyof Billing) => (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) =>
     setBilling((b) => ({ ...b, [k]: e.target.value }));
@@ -132,6 +142,10 @@ export default function CheckoutClient() {
         firstName: billing.firstName,
         lastName: billing.lastName,
         email: billing.email,
+        phone: billing.phone,
+        address: billing.address,
+        city: billing.city,
+        zipCode: billing.postcode,
       },
     };
 
@@ -196,12 +210,12 @@ export default function CheckoutClient() {
           <tbody>
             <tr>
               <td className="co-prod">{BASE_LINE.name} &nbsp;×&nbsp;1</td>
-              <td className="co-amt">{formatMoney(BASE_LINE.price, CURRENCY)} / year</td>
+              <td className="co-amt">{formatMoney(priceOf(BASE_LINE.price), CURRENCY)} / year</td>
             </tr>
             {ADDONS.filter((a) => selectedAddons.has(a.id)).map((a) => (
               <tr key={a.id}>
                 <td className="co-prod">{a.name} &nbsp;×&nbsp;1</td>
-                <td className="co-amt">{formatMoney(a.price, CURRENCY)} / year</td>
+                <td className="co-amt">{formatMoney(priceOf(a.price), CURRENCY)} / year</td>
               </tr>
             ))}
             <tr className="co-row-strong">
@@ -227,7 +241,7 @@ export default function CheckoutClient() {
                 <div className="co-upsell-ic" aria-hidden="true">{a.icon}</div>
                 <div className="co-upsell-info">
                   <b>{a.name}</b>
-                  <span>{formatMoney(a.price, CURRENCY)} / year · {a.meta}</span>
+                  <span>{formatMoney(priceOf(a.price), CURRENCY)} / year · {a.meta}</span>
                 </div>
                 <button
                   type="button"

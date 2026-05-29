@@ -3,7 +3,7 @@ import {
   createCashierSession,
   isBridgerPayConfigured,
 } from "@/lib/bridgerpay";
-import { getDefaultOrder } from "@/lib/order";
+import { getDefaultOrder, isLocalHost } from "@/lib/order";
 
 export const runtime = "nodejs";
 
@@ -17,17 +17,31 @@ export async function POST(req: NextRequest) {
 
   const body = (await req.json().catch(() => ({}))) as Record<string, unknown>;
   const order = getDefaultOrder();
+  const local = isLocalHost(req.headers.get("host"));
 
-  const amount = Number.isFinite(body.amount)
-    ? Math.round(Number(body.amount))
-    : order.amount;
+  // On localhost every product is free so the checkout can be exercised
+  // end-to-end without a real charge; production always bills the real total.
+  const amount = local
+    ? 0
+    : Number.isFinite(body.amount)
+      ? Math.round(Number(body.amount))
+      : order.amount;
   const currency = (body.currency as string) ?? order.currency;
   const country = (body.country as string) ?? "US";
   const customer = body.customer as
-    | { firstName?: string; lastName?: string; email?: string }
+    | {
+        firstName?: string;
+        lastName?: string;
+        email?: string;
+        phone?: string;
+        address?: string;
+        city?: string;
+        state?: string;
+        zipCode?: string;
+      }
     | undefined;
 
-  if (!(amount > 0)) {
+  if (!local && !(amount > 0)) {
     return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
   }
 

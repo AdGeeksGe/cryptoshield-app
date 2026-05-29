@@ -1,17 +1,21 @@
 // Server-side BridgerPay client.
 //
-// Flow (per https://docs.bridgerpay.com api-v2):
-//   1. Authenticate as a producer (merchant) to get a Bearer access_token.
+// Flow (per https://developers.bridgerpay.com api-v2):
+//   1. Log in with the merchant user_name/password to get a Bearer access_token
+//      ->  POST /v2/auth/login  ->  result.access_token.token.
 //   2. Create a server-side cashier session ->  POST
-//      /v2/cashier/session/create/{api_key}  (Bearer auth)  ->  cashier_token.
+//      /v2/cashier/session/create/{api_key}  (Bearer auth)  ->
+//      result.cashier_token.
 //   3. The browser embeds the Cashier widget using your public `cashier_key`
 //      + the `cashier_token` from step 2.
+//
+// Every response is wrapped as { response: { code, message }, result: ... }
+// where `result` is the payload on success or an array of errors on failure.
 //
 // Auth path / base are env-overridable because BridgerPay accounts can differ.
 
 const API_BASE = process.env.BRIDGERPAY_API_BASE ?? "https://api.bridgerpay.com";
-const AUTH_PATH =
-  process.env.BRIDGERPAY_AUTH_PATH ?? "/v1/auth/producer/api-key";
+const AUTH_PATH = process.env.BRIDGERPAY_AUTH_PATH ?? "/v2/auth/login";
 const API_KEY = process.env.BRIDGERPAY_API_KEY ?? "";
 const USERNAME = process.env.BRIDGERPAY_USERNAME ?? "";
 const PASSWORD = process.env.BRIDGERPAY_PASSWORD ?? "";
@@ -26,6 +30,11 @@ export interface CreateCashierSessionInput {
     firstName?: string;
     lastName?: string;
     email?: string;
+    phone?: string;
+    address?: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
   };
 }
 
@@ -39,26 +48,38 @@ export function isBridgerPayConfigured(): boolean {
   return Boolean(API_KEY && USERNAME && PASSWORD && CASHIER_KEY);
 }
 
+/** Pull a human-readable message out of a BridgerPay envelope. */
+function envelopeError(data: Record<string, unknown>): string {
+  const result = data.result;
+  if (Array.isArray(result)) {
+    return result
+      .map((e) => (e as { message?: string }).message)
+      .filter(Boolean)
+      .join(", ");
+  }
+  return (
+    ((data.response as Record<string, unknown>)?.message as string) ??
+    JSON.stringify(data)
+  );
+}
+
 async function authenticate(): Promise<string> {
   const res = await fetch(`${API_BASE}${AUTH_PATH}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
     body: JSON.stringify({ user_name: USERNAME, password: PASSWORD }),
     cache: "no-store",
   });
   const data = (await res.json().catch(() => ({}))) as Record<string, unknown>;
-  if (!res.ok) {
-    throw new Error(
-      `BridgerPay auth failed (${res.status}): ${JSON.stringify(data)}`,
-    );
-  }
+  const result = data.result as Record<string, unknown> | undefined;
+  // Success shape: { result: { access_token: { token, expires_in } } }
   const token =
-    (data.access_token as string) ??
-    ((data.result as Record<string, unknown>)?.access_token as string) ??
-    ((data.data as Record<string, unknown>)?.access_token as string);
-  if (!token) {
+    ((result?.access_token as Record<string, unknown>)?.token as string) ??
+    (result?.access_token as string) ?? // tolerate a flat fallback
+    (data.access_token as string);
+  if (!res.ok || !token) {
     throw new Error(
-      `BridgerPay auth response missing access_token: ${JSON.stringify(data)}`,
+      `BridgerPay auth failed (${res.status}): ${envelopeError(data)}`,
     );
   }
   return token;
@@ -85,6 +106,11 @@ export async function createCashierSession(
     first_name: input.customer?.firstName,
     last_name: input.customer?.lastName,
     email: input.customer?.email,
+    phone: input.customer?.phone,
+    address: input.customer?.address,
+    city: input.customer?.city,
+    state: input.customer?.state,
+    zip_code: input.customer?.zipCode,
   };
 
   const res = await fetch(
@@ -93,6 +119,7 @@ export async function createCashierSession(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        Accept: "application/json",
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify(body),
@@ -101,18 +128,13 @@ export async function createCashierSession(
   );
 
   const data = (await res.json().catch(() => ({}))) as Record<string, unknown>;
-  if (!res.ok) {
-    throw new Error(
-      `BridgerPay session create failed (${res.status}): ${JSON.stringify(data)}`,
-    );
-  }
-
-  const result = (data.result ?? data.data ?? data) as Record<string, unknown>;
+  const result = data.result as Record<string, unknown> | undefined;
   const cashierToken =
-    (result.cashier_token as string) ?? (result.token as string);
-  if (!cashierToken) {
+    !Array.isArray(result) &&
+    ((result?.cashier_token as string) ?? (result?.token as string));
+  if (!res.ok || !cashierToken) {
     throw new Error(
-      `BridgerPay response missing cashier_token: ${JSON.stringify(data)}`,
+      `BridgerPay session create failed (${res.status}): ${envelopeError(data)}`,
     );
   }
 

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createPaymentSession, isPaycomConfigured } from "@/lib/paycom";
-import { getDefaultOrder } from "@/lib/order";
+import { getDefaultOrder, isLocalHost } from "@/lib/order";
 
 export const runtime = "nodejs";
 
@@ -22,16 +22,20 @@ export async function POST(req: NextRequest) {
 
   const body = (await req.json().catch(() => ({}))) as Record<string, unknown>;
   const order = getDefaultOrder();
+  const local = isLocalHost(req.headers.get("host"));
 
-  const amount = Number.isFinite(body.amount)
-    ? Math.round(Number(body.amount))
-    : order.amount;
+  // On localhost every product is free (see lib/order.ts → isLocalHost).
+  const amount = local
+    ? 0
+    : Number.isFinite(body.amount)
+      ? Math.round(Number(body.amount))
+      : order.amount;
   const currency = (body.currency as string) ?? order.currency;
   const customer = body.customer as
     | { firstName?: string; lastName?: string; email?: string }
     | undefined;
 
-  if (!(amount > 0)) {
+  if (!local && !(amount > 0)) {
     return NextResponse.json({ error: "Invalid amount" }, { status: 400 });
   }
 
