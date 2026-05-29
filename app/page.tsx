@@ -48,18 +48,45 @@ function applyCtaCopy(html: string, text: string): string {
   return html.replace(re, (_m, open: string, close: string) => `${open}${escapeHtml(text)}${close}`);
 }
 
+// A/B test — hero headline copy. The variant text comes from the Statsig
+// experiment "landing_hero_headline" (string parameter "hero_headline"). Values
+// use [[...]] to mark the colored accent span, mirroring the source <h1>; the
+// rest of the text is HTML-escaped, then the markers become <span class="accent">.
+// This keeps the headline's two-tone styling intact across every variant.
+// Runs independently of the CTA test above (different element).
+const HEADLINE_EXPERIMENT = "landing_hero_headline";
+const HEADLINE_PARAM = "hero_headline";
+const HEADLINE_DEFAULT =
+  "Stop mobile scams and data hacks [[before they touch your phone.]]";
+
+function renderHeadline(value: string): string {
+  return escapeHtml(value).replace(
+    /\[\[(.+?)\]\]/g,
+    (_m, inner: string) => `<span class="accent">${inner}</span>`,
+  );
+}
+
+function applyHeadline(html: string, value: string): string {
+  if (value === HEADLINE_DEFAULT) return html;
+  return html.replace(
+    /(<h1 class="anim a3">)[\s\S]*?(<\/h1>)/,
+    (_m, open: string, close: string) => `${open}${renderHeadline(value)}${close}`,
+  );
+}
+
 export default async function HomePage() {
   const html = getLandingMarkup();
-  const ctaText = await getExperimentParam(
-    getStatsigUser(),
-    CTA_EXPERIMENT,
-    CTA_PARAM,
-    CTA_DEFAULT,
-  );
+  const user = getStatsigUser();
+  const [ctaText, headline] = await Promise.all([
+    getExperimentParam(user, CTA_EXPERIMENT, CTA_PARAM, CTA_DEFAULT),
+    getExperimentParam(user, HEADLINE_EXPERIMENT, HEADLINE_PARAM, HEADLINE_DEFAULT),
+  ]);
+
+  const rendered = applyHeadline(applyCtaCopy(html, ctaText), headline);
 
   return (
     <>
-      <div dangerouslySetInnerHTML={{ __html: applyCtaCopy(html, ctaText) }} />
+      <div dangerouslySetInnerHTML={{ __html: rendered }} />
       <LandingInteractions />
       <CheckoutModal />
     </>
